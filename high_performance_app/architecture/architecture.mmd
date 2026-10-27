@@ -1,0 +1,16 @@
+flowchart LR
+    C[Client] -->|POST /process| API[API Server<br/>asyncio, rate limiter]
+    API --> Q[(Bounded Queue<br/>back-pressure)]
+    Q --> W1[Worker 1]
+    Q --> W2[Worker 2]
+    Q --> WN[Worker N]
+    W1 & W2 & WN --> CACHE{TTL-LRU Cache}
+    CACHE -- miss --> CB[Circuit Breaker + Retry]
+    CB --> S[[Strategy<br/>fast / io / thorough]]
+    S -. CPU-bound .-> PP[ProcessPool]
+    W1 & W2 & WN --> BUF[Write Buffer<br/>batch N rows]
+    BUF --> DB[(SQLite WAL<br/>pooled, indexed)]
+    W1 & W2 & WN -- events --> BUS[EventBus<br/>Observer]
+    BUS --> M[Metrics Observer]
+    M --> PROM[/metrics<br/>Prometheus/]
+    PROM --> GRAF[Grafana + Alerts]

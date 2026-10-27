@@ -1,0 +1,35 @@
+........................................                                 [100%]
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.12.3-final-0 ________________
+
+Name                                     Stmts   Miss  Cover   Missing
+----------------------------------------------------------------------
+src/hpapp/__init__.py                        1      0   100%
+src/hpapp/api/__init__.py                    0      0   100%
+src/hpapp/api/server.py                     98      6    94%   54-56, 67-68, 107
+src/hpapp/app.py                            38      0   100%
+src/hpapp/cache/__init__.py                  0      0   100%
+src/hpapp/cache/ttl_cache.py                46      0   100%
+src/hpapp/config.py                         31      0   100%
+src/hpapp/database/__init__.py               0      0   100%
+src/hpapp/database/store.py                 73      0   100%
+src/hpapp/main.py                            8      8     0%   2-11
+src/hpapp/models.py                         41      0   100%
+src/hpapp/monitoring/__init__.py             0      0   100%
+src/hpapp/monitoring/logging_config.py      16      0   100%
+src/hpapp/monitoring/metrics.py             62      0   100%
+src/hpapp/monitoring/observers.py           20      0   100%
+src/hpapp/patterns/__init__.py               0      0   100%
+src/hpapp/patterns/factory.py               18      0   100%
+src/hpapp/patterns/observer.py              26      0   100%
+src/hpapp/patterns/strategies.py            38      0   100%
+src/hpapp/services/__init__.py               0      0   100%
+src/hpapp/services/pipeline.py              87      2    98%   93-94
+src/hpapp/services/resilience.py            47      0   100%
+src/hpapp/utils/__init__.py                  0      0   100%
+src/hpapp/utils/profiling.py                26      0   100%
+----------------------------------------------------------------------
+TOTAL                                      676     16    98%
+Coverage HTML written to dir performance/coverage_html
+Required test coverage of 80% reached. Total coverage: 97.63%
+40 passed in 0.90s

@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hpapp
+  labels: { app: hpapp }
+spec:
+  replicas: 3
+  strategy: { type: RollingUpdate, rollingUpdate: { maxUnavailable: 0, maxSurge: 1 } }
+  selector: { matchLabels: { app: hpapp } }
+  template:
+    metadata:
+      labels: { app: hpapp }
+      annotations: { prometheus.io/scrape: "true", prometheus.io/port: "8080", prometheus.io/path: /metrics }
+    spec:
+      terminationGracePeriodSeconds: 30
+      securityContext: { runAsNonRoot: true, runAsUser: 10001 }
+      containers:
+        - name: hpapp
+          image: hpapp:2.1.0
+          ports: [{ containerPort: 8080 }]
+          envFrom: [{ configMapRef: { name: hpapp-config } }]
+          env: [{ name: HPAPP_DB_PATH, value: /data/hpapp.db }]
+          resources:
+            requests: { cpu: "500m", memory: "256Mi" }
+            limits:   { cpu: "2",    memory: "1Gi" }
+          readinessProbe: { httpGet: { path: /ready,  port: 8080 }, periodSeconds: 5 }
+          livenessProbe:  { httpGet: { path: /health, port: 8080 }, initialDelaySeconds: 10, periodSeconds: 10 }
+          volumeMounts: [{ name: data, mountPath: /data }]
+      volumes:
+        - name: data
+          emptyDir: {}      # per-pod SQLite; swap for PostgreSQL in multi-replica production (see docs/scalability.md)

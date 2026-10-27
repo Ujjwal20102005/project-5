@@ -1,0 +1,19 @@
+{
+  "title": "hpapp - Performance Dashboard",
+  "schemaVersion": 39,
+  "panels": [
+    {"id": 1, "type": "timeseries", "title": "Throughput (records/s)", "gridPos": {"x":0,"y":0,"w":12,"h":8},
+     "targets": [{"expr": "rate(hpapp_records_processed_total[1m])"}]},
+    {"id": 2, "type": "timeseries", "title": "Latency p50 / p95 / p99 (ms)", "gridPos": {"x":12,"y":0,"w":12,"h":8},
+     "targets": [
+       {"expr": "histogram_quantile(0.50, sum(rate(hpapp_record_latency_ms_bucket[5m])) by (le))", "legendFormat": "p50"},
+       {"expr": "histogram_quantile(0.95, sum(rate(hpapp_record_latency_ms_bucket[5m])) by (le))", "legendFormat": "p95"},
+       {"expr": "histogram_quantile(0.99, sum(rate(hpapp_record_latency_ms_bucket[5m])) by (le))", "legendFormat": "p99"}]},
+    {"id": 3, "type": "stat", "title": "Cache hit rate", "gridPos": {"x":0,"y":8,"w":6,"h":6},
+     "targets": [{"expr": "hpapp_cache_hit_rate"}]},
+    {"id": 4, "type": "timeseries", "title": "Error rate", "gridPos": {"x":6,"y":8,"w":9,"h":6},
+     "targets": [{"expr": "rate(hpapp_records_failed_total[5m])"}]},
+    {"id": 5, "type": "timeseries", "title": "DB rows written/s", "gridPos": {"x":15,"y":8,"w":9,"h":6},
+     "targets": [{"expr": "rate(hpapp_db_rows_written_total[1m])"}]}
+  ]
+}

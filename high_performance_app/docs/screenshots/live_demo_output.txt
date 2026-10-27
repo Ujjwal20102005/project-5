@@ -1,0 +1,67 @@
+$ curl localhost:8099/health
+{"status": "ok"}
+
+$ curl -X POST localhost:8099/process -d {"records":[...3 records...]}
+{"total": 3, "succeeded": 3, "failed": 0, "cached": 1, "elapsed_s": 0.0027, "throughput_rps": 1091.5, "results": [{"id": "a", "status": "ok", "strategy": "fast", "digest": "5041bf1f713df204784353e82f6a4a535931cb64f1f4b4a5aeaffcb720918b22", "duration_ms": 0.085, "cached": false, "error": null}, {"id": "b", "status": "ok", "strategy": "fast", "digest": "5e2b030a4a0f1582d78c0fd9924511cd6b1f2df9879e574f5ea1406c94052418", "duration_ms": 0.038, "cached": false, "error": null}, {"id": "a2", "status": "ok", "strategy": "fast", "digest": "5041bf1f713df204784353e82f6a4a535931cb64f1f4b4a5aeaffcb720918b22", "duration_ms": 0.011, "cached": true, "error": null}]}
+
+$ python scripts/load_test.py 127.0.0.1 8099 1000 100
+requests=1000 concurrency=100 elapsed=0.97s rps=1035 codes={200: 1000}
+latency ms: p50=91.2 p95=122.1 p99=127.6
+
+$ curl localhost:8099/stats
+{
+    "version": "2.1.0",
+    "strategy": "fast",
+    "cache": {
+        "size": 10000,
+        "maxsize": 10000,
+        "hits": 1,
+        "misses": 10002,
+        "evictions": 2,
+        "expirations": 0,
+        "hit_rate": 0.0001
+    },
+    "db": {
+        "rows": 10003,
+        "by_status": {
+            "ok": 10003
+        }
+    },
+    "latency_ms": {
+        "p50": 0.008277999995698337,
+        "p95": 0.016406000014512756,
+        "p99": 0.046828999984427355
+    }
+}
+
+$ curl localhost:8099/metrics | head -30
+# TYPE hpapp_db_batches_total counter
+hpapp_db_batches_total 1001.0
+# TYPE hpapp_db_rows_written_total counter
+hpapp_db_rows_written_total 10003.0
+# TYPE hpapp_http_requests_total counter
+hpapp_http_requests_total 1003.0
+# TYPE hpapp_http_responses_200_total counter
+hpapp_http_responses_200_total 1003.0
+# TYPE hpapp_records_cached_total counter
+hpapp_records_cached_total 1.0
+# TYPE hpapp_records_processed_total counter
+hpapp_records_processed_total 10003.0
+# TYPE hpapp_cache_evictions gauge
+hpapp_cache_evictions 2
+# TYPE hpapp_cache_expirations gauge
+hpapp_cache_expirations 0
+# TYPE hpapp_cache_hit_rate gauge
+hpapp_cache_hit_rate 0.0001
+# TYPE hpapp_cache_hits gauge
+hpapp_cache_hits 1
+# TYPE hpapp_cache_maxsize gauge
+hpapp_cache_maxsize 10000
+# TYPE hpapp_cache_misses gauge
+hpapp_cache_misses 10002
+# TYPE hpapp_cache_size gauge
+hpapp_cache_size 10000
+# TYPE hpapp_http_latency_ms histogram
+hpapp_http_latency_ms_bucket{le="1"} 1
+hpapp_http_latency_ms_bucket{le="5"} 2
+hpapp_http_latency_ms_bucket{le="10"} 3

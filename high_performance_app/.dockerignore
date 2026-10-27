@@ -1,0 +1,6 @@
+tests
+docs
+performance
+.git
+__pycache__
+*.db*

@@ -1,0 +1,20 @@
+groups:
+  - name: hpapp
+    rules:
+      - alert: HighErrorRate
+        expr: rate(hpapp_records_failed_total[5m]) / clamp_min(rate(hpapp_records_processed_total[5m]) + rate(hpapp_records_failed_total[5m]), 1) > 0.01
+        for: 5m
+        labels: { severity: page }
+        annotations: { summary: "More than 1% of records failing" }
+      - alert: HighP95Latency
+        expr: histogram_quantile(0.95, sum(rate(hpapp_record_latency_ms_bucket[5m])) by (le)) > 250
+        for: 10m
+        labels: { severity: warn }
+      - alert: LowCacheHitRate
+        expr: hpapp_cache_hit_rate < 0.5
+        for: 15m
+        labels: { severity: info }
+      - alert: RateLimitingActive
+        expr: rate(hpapp_rate_limited_total[5m]) > 1
+        for: 5m
+        labels: { severity: warn }
